@@ -189,7 +189,7 @@ def main():
         op = df["open"]
         volume = df["volume"]
 
-        print(getIndicators(df))
+        compIndicators = getIndicators(df)
 
         dfSec = get_historical_data(sector, start, end, output_format="pandas")
         highSec = dfSec["high"]
@@ -198,12 +198,16 @@ def main():
         opSec = dfSec["open"]
         volumeSec = dfSec["volume"]
 
+        secIndicators = getIndicators(dfSec)
+
         dfMarket = get_historical_data("SPY", start, end, output_format="pandas")
         highMarket = dfMarket["high"]
         lowMarket = dfMarket["low"]
         closeMarket = dfMarket["close"]
         opMarket = dfMarket["open"]
         volumeMarket = dfMarket["volume"]
+
+        marketIndicators = getIndicators(dfMarket)
 
 
 
