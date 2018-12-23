@@ -243,21 +243,21 @@ def main():
         print(len(trainFeatures))
         print(len(testFeatures))
 
-        rf = RandomForestRegressor(n_estimators=65, random_state = 42)
-        rf.fit(trainFeatures, trainLabels)
+    rf = RandomForestRegressor(n_estimators=65, random_state = 42)
+    rf.fit(trainFeatures, trainLabels)
 
-        predictions = rf.predict(testFeatures)
-        for i in range(len(predictions)):
-		if(predictions[i] > .5):
-			predictions[i] = 1
-		else:
-			predictions[i] = 0
+    predictions = rf.predict(testFeatures)
+    for i in range(len(predictions)):
+        if(predictions[i] > .5):
+            predictions[i] = 1
+        else:
+            predictions[i] = 0
             
-        target_names = ['0', '1']
+    target_names = ['0', '1']
 
-	    print(classification_report(testLabels, predictions, target_names=target_names))
-	    confusionMatrix = confusion_matrix(testLabels, predictions)
-	    print('Confusion Matrix: ', confusionMatrix)
+    print(classification_report(testLabels, predictions, target_names=target_names))
+    confusionMatrix = confusion_matrix(testLabels, predictions)
+    print('Confusion Matrix: ', confusionMatrix)
 
 
 
