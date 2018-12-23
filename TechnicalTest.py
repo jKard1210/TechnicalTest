@@ -184,7 +184,7 @@ def getLabels(close, days, change):
 def main():
     start = datetime(2014, 1, 1)
     end = datetime(2018, 1, 1)
-    days = 20
+    days = 60
     change = .04
 
     trainFeatures = []
@@ -208,6 +208,9 @@ def main():
 
         df = get_historical_data(company, start, end, output_format="pandas")
 
+        if(df.shape[0] < 800):
+            continue;
+
         compIndicators = getIndicators(df)
 
         dfSec = get_historical_data(sector, start, end, output_format="pandas")
@@ -223,10 +226,6 @@ def main():
         n = len(indicators[0])
 
         compFeatures = np.array(indicators).T
-
-        if(len(compFeatures) < 800):
-            continue;
-
         compFeatures = compFeatures[30:n-days]
         compLabels = getLabels(df["close"], days, change)
         compLabels = np.asarray(compLabels)
@@ -239,9 +238,6 @@ def main():
             testFeatures.append(compFeatures[i])
             testLabels.append(compLabels[i])
 
-
-        print(len(trainFeatures))
-        print(len(testFeatures))
 
     rf = RandomForestRegressor(n_estimators=65, random_state = 42)
     rf.fit(trainFeatures, trainLabels)
