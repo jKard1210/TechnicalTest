@@ -161,7 +161,7 @@ def getIndicators(df):
     trendMACDSig = trendMACDSig(df).tolist()
     trendMI = trendMI(df).tolist()
     trendTRIX = trendTRIX(df).tolist()
-    trnedVIN = trendVIN(df).tolist()
+    trendVIN = trendVIN(df).tolist()
     trendVIP = trendVIP(df).tolist()
     dailyReturn = dailyReturn(df).tolist()
     return([momentumAo, momentumRSI, momentumStoch, momentumStochSignal, momentumTSI, volumeADI, volumeCMF, volumeForce, volumeEMV, volatilityDC, volatilityBB, trendAID, trendADX, trendAIU, trendCCI, trendDPO, trendEMA, trendIKH, trendKST, trendMACD, trendMACDSig, trendMI, trendTRIX, trendVIN, trendVIP, dailyReturn])
