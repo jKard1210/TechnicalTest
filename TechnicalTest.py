@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import csv
 import pickle
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 def momentumAo(df):
     return (ta.momentum.ao(df["high"], df["low"], l=34, fillna=True))
@@ -239,6 +242,22 @@ def main():
 
         print(len(trainFeatures))
         print(len(testFeatures))
+
+        rf = RandomForestRegressor(n_estimators=65, random_state = 42)
+        rf.fit(trainFeatures, trainLabels)
+
+        predictions = rf.predict(testFeatures)
+        for i in range(len(predictions)):
+		if(predictions[i] > .5):
+			predictions[i] = 1
+		else:
+			predictions[i] = 0
+            
+        target_names = ['0', '1']
+
+	    print(classification_report(testLabels, predictions, target_names=target_names))
+	    confusionMatrix = confusion_matrix(testLabels, predictions)
+	    print('Confusion Matrix: ', confusionMatrix)
 
 
 
