@@ -184,6 +184,11 @@ def main():
     days = 20
     change = .04
 
+    trainFeatures = []
+    trainLabels = []
+    testFeatures = []
+    testLabels = []
+
     with open('ticker_sectors.data', 'rb') as f:
     		tickerSectors = pickle.load(f)
     companies = tickerSectors[0]
@@ -214,14 +219,29 @@ def main():
 
         n = len(indicators[0])
 
-        features = np.array(indicators).T
-        features = features[30:n-days]
-        labels = getLabels(df["close"], days, change)
-        labels = np.asarray(labels)
-        labels = labels[30:]
+        compFeatures = np.array(indicators).T
 
-        print(features.shape)
-        print(labels.shape)
+        if(len(compFeatures) < 800):
+            continue;
+
+        compFeatures = compFeatures[30:n-days]
+        compLabels = getLabels(df["close"], days, change)
+        compLabels = np.asarray(compLabels)
+        compLabels = compLabels[30:]
+
+        for i in range(0, 700):
+            trainFeatures.append(compFeatures[i])
+            trainLabels.append(compLabels[i])
+        for i in range(730, len(compFeatures)):
+            testFeatures.append(compFeatures[i])
+            testLabels.append(compLabels[i])
+
+
+        print(len(trainFeatures))
+        print(len(testFeatures))
+
+
+
 
 
 
