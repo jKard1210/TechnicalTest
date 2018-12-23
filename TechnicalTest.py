@@ -207,6 +207,9 @@ def main():
             sector = "XLK"
 
         df = get_historical_data(company, start, end, output_format="pandas")
+        print(df.shape[0])
+        if(df.shape[0] < 800):
+            continue;
 
         compIndicators = getIndicators(df)
 
@@ -224,9 +227,6 @@ def main():
 
         compFeatures = np.array(indicators).T
 
-        if(len(compFeatures) < 800):
-            continue;
-
         compFeatures = compFeatures[30:n-days]
         compLabels = getLabels(df["close"], days, change)
         compLabels = np.asarray(compLabels)
@@ -238,10 +238,6 @@ def main():
         for i in range(730, len(compFeatures)):
             testFeatures.append(compFeatures[i])
             testLabels.append(compLabels[i])
-
-
-        print(len(trainFeatures))
-        print(len(testFeatures))
 
     rf = RandomForestRegressor(n_estimators=65, random_state = 42)
     rf.fit(trainFeatures, trainLabels)
