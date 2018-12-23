@@ -226,7 +226,8 @@ def main():
         n = len(indicators[0])
 
         compFeatures = np.array(indicators).T
-
+        if(len(compFeatures) < 800):
+            continue;
         compFeatures = compFeatures[30:n-days]
         compLabels = getLabels(df["close"], days, change)
         compLabels = np.asarray(compLabels)
