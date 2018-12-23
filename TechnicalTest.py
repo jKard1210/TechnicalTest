@@ -10,6 +10,7 @@ import ta
 import iexfinance
 from iexfinance.stocks import get_historical_data
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 import csv
@@ -138,39 +139,50 @@ def dailyLogReturn(df):
     return(ta.others.daily_log_return(df["close"], fillna=True))
 
 def getIndicators(df):
-    momentumAo = momentumAo(df).tolist()
-    momentumRSI = momentumRSI(df).tolist()
-    momentumStoch = momentumStoch(df).tolist()
-    momentumStochSignal = momentumStochSignal(df).tolist()
-    momentumTSI = momentumTSI(df).tolist()
-    volumeADI = volumeADI(df).tolist()
-    volumeCMF = volumeCMF(df).tolist()
-    volumeForce = volumeForce(df).tolist()
-    volumeEMV = volumeEMV(df).tolist()
-    volatilityDC = volatilityDC(df).tolist()
-    volatilityBB = volatilityBB(df).tolist()
-    trendAID = trendAID(df).tolist()
-    trendADX = trendADX(df).tolist()
-    trendAIU = trendAIU(df).tolist()
-    trendCCI = trendCCI(df).tolist()
-    trendDPO = trendDPO(df).tolist()
-    trendEMA = trendEMA(df).tolist()
-    trendIKH = trendIKH(df).tolist()
-    trendKST = trendKST(df).tolist()
-    trendMACD = trendMACD(df).tolist()
-    trendMACDSig = trendMACDSig(df).tolist()
-    trendMI = trendMI(df).tolist()
-    trendTRIX = trendTRIX(df).tolist()
-    trendVIN = trendVIN(df).tolist()
-    trendVIP = trendVIP(df).tolist()
-    dailyReturn = dailyReturn(df).tolist()
-    return([momentumAo, momentumRSI, momentumStoch, momentumStochSignal, momentumTSI, volumeADI, volumeCMF, volumeForce, volumeEMV, volatilityDC, volatilityBB, trendAID, trendADX, trendAIU, trendCCI, trendDPO, trendEMA, trendIKH, trendKST, trendMACD, trendMACDSig, trendMI, trendTRIX, trendVIN, trendVIP, dailyReturn])
+    AO = momentumAo(df).tolist()
+    RSI = momentumRSI(df).tolist()
+    Stoch = momentumStoch(df).tolist()
+    StochSignal = momentumStochSignal(df).tolist()
+    TSI = momentumTSI(df).tolist()
+    ADI = volumeADI(df).tolist()
+    CMF = volumeCMF(df).tolist()
+    Force = volumeForce(df).tolist()
+    EMV = volumeEMV(df).tolist()
+    DC = volatilityDC(df).tolist()
+    BB = volatilityBB(df).tolist()
+    AID = trendAID(df).tolist()
+    ADX = trendADX(df).tolist()
+    AIU = trendAIU(df).tolist()
+    CCI = trendCCI(df).tolist()
+    DPO = trendDPO(df).tolist()
+    EMA = trendEMA(df).tolist()
+    IKH = trendIKH(df).tolist()
+    KST = trendKST(df).tolist()
+    MACD = trendMACD(df).tolist()
+    MACDSig = trendMACDSig(df).tolist()
+    MI = trendMI(df).tolist()
+    TRIX = trendTRIX(df).tolist()
+    VIN = trendVIN(df).tolist()
+    VIP = trendVIP(df).tolist()
+    dayReturn = dailyReturn(df).tolist()
+    return([AO, RSI, Stoch, StochSignal, TSI, ADI, CMF, Force, EMV, DC, BB, AID, ADX, AIU, CCI, DPO, EMA, IKH, KST, MACD, MACDSig, MI, TRIX, VIN, VIP, dayReturn])
 
-
+def getLabels(close, days, change):
+    closes = close.tolist()
+    labels = []
+    for i in range(0, len(closes)-days):
+            gain = (closes[i+days]-closes[i])/closes[i]
+            if(gain > 1 + change):
+                labels.append(1)
+            else:
+                labels.append(0)
+    return labels
 
 def main():
     start = datetime(2014, 1, 1)
     end = datetime(2018, 1, 1)
+    days = 20
+    change = .04
 
     with open('ticker_sectors.data', 'rb') as f:
     		tickerSectors = pickle.load(f)
@@ -181,33 +193,35 @@ def main():
         company = companies[i]
         sector = sectors[i]
         print(company)
+        print(sector)
+
+        if(sector == "XLC"):
+            sector = "XLK"
 
         df = get_historical_data(company, start, end, output_format="pandas")
-        high = df["high"]
-        low = df["low"]
-        close = df["close"]
-        op = df["open"]
-        volume = df["volume"]
 
         compIndicators = getIndicators(df)
 
         dfSec = get_historical_data(sector, start, end, output_format="pandas")
-        highSec = dfSec["high"]
-        lowSec = dfSec["low"]
-        closeSec = dfSec["close"]
-        opSec = dfSec["open"]
-        volumeSec = dfSec["volume"]
 
         secIndicators = getIndicators(dfSec)
 
         dfMarket = get_historical_data("SPY", start, end, output_format="pandas")
-        highMarket = dfMarket["high"]
-        lowMarket = dfMarket["low"]
-        closeMarket = dfMarket["close"]
-        opMarket = dfMarket["open"]
-        volumeMarket = dfMarket["volume"]
 
         marketIndicators = getIndicators(dfMarket)
+
+        indicators = compIndicators + secIndicators + marketIndicators
+
+        n = len(indicators[0])
+
+        features = np.array(indicators).T
+        features = features[30:n-days]
+        labels = getLabels(df["close"], days, change)
+        labels = np.asarray(labels)
+        labels = labels[30:]
+
+        print(features.shape)
+        print(labels.shape)
 
 
 
