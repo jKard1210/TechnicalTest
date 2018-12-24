@@ -188,9 +188,14 @@ def getLabels(close, days, change):
 def main():
     start = datetime(2014, 1, 1)
     end = datetime(2018, 1, 1)
+<<<<<<< HEAD
     days = 5
     change = .02
     filename = 'new_finalized_model_' + str(days) + 'day_' + str(change) + '_pct.sav'
+=======
+    days = 60
+    change = .04
+>>>>>>> 3e4294f931631062e9e5572da4e98c72095280e6
 
     trainFeatures = []
     trainLabels = []
@@ -216,6 +221,9 @@ def main():
         if(df.shape[0] < 800):
             continue;
 
+        if(df.shape[0] < 800):
+            continue;
+
         compIndicators = getIndicators(df)
 
         dfSec = get_historical_data(sector, start, end, output_format="pandas")
@@ -231,8 +239,11 @@ def main():
         n = len(indicators[0])
 
         compFeatures = np.array(indicators).T
+<<<<<<< HEAD
         if(len(compFeatures) < 800):
             continue;
+=======
+>>>>>>> 3e4294f931631062e9e5572da4e98c72095280e6
         compFeatures = compFeatures[30:n-days]
         compLabels = getLabels(df["close"], days, change)
         compLabels = np.asarray(compLabels)
@@ -245,6 +256,7 @@ def main():
             testFeatures.append(compFeatures[i])
             testLabels.append(compLabels[i])
 
+<<<<<<< HEAD
     # model = MLPClassifier(hidden_layer_sizes=(13,13,13),max_iter=5000)
     # model.fit(trainFeatures,trainLabels)
     model = RandomForestRegressor(n_estimators=65, random_state = 42)
@@ -254,6 +266,15 @@ def main():
     print(predictions)
     for i in range (0, len(predictions)):
         if(predictions[i] > .0):
+=======
+
+    rf = RandomForestRegressor(n_estimators=65, random_state = 42)
+    rf.fit(trainFeatures, trainLabels)
+
+    predictions = rf.predict(testFeatures)
+    for i in range(len(predictions)):
+        if(predictions[i] > .5):
+>>>>>>> 3e4294f931631062e9e5572da4e98c72095280e6
             predictions[i] = 1
         elif(predictions[i] < -.33):
             predictions[i] = -1
