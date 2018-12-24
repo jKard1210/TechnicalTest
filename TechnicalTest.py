@@ -15,7 +15,9 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import csv
 import pickle
+import joblib
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
@@ -175,8 +177,10 @@ def getLabels(close, days, change):
     labels = []
     for i in range(0, len(closes)-days):
             gain = (closes[i+days]-closes[i])/closes[i]
-            if(gain > 1 + change):
+            if(gain > change):
                 labels.append(1)
+            elif(gain < 0-change):
+                labels.append(-1)
             else:
                 labels.append(0)
     return labels
@@ -184,8 +188,9 @@ def getLabels(close, days, change):
 def main():
     start = datetime(2014, 1, 1)
     end = datetime(2018, 1, 1)
-    days = 20
-    change = .04
+    days = 5
+    change = .02
+    filename = 'new_finalized_model_' + str(days) + 'day_' + str(change) + '_pct.sav'
 
     trainFeatures = []
     trainLabels = []
@@ -197,7 +202,7 @@ def main():
     companies = tickerSectors[0]
     sectors = tickerSectors[1]
     
-    for i in range(0, len(companies)):
+    for i in range(0, 100):
         company = companies[i]
         sector = sectors[i]
         print(company)
@@ -240,21 +245,27 @@ def main():
             testFeatures.append(compFeatures[i])
             testLabels.append(compLabels[i])
 
-    rf = RandomForestRegressor(n_estimators=65, random_state = 42)
-    rf.fit(trainFeatures, trainLabels)
-
-    predictions = rf.predict(testFeatures)
-    for i in range(len(predictions)):
-        if(predictions[i] > .5):
+    # model = MLPClassifier(hidden_layer_sizes=(13,13,13),max_iter=5000)
+    # model.fit(trainFeatures,trainLabels)
+    model = RandomForestRegressor(n_estimators=65, random_state = 42)
+    model.fit(trainFeatures, trainLabels)
+    predictions = model.predict(testFeatures)
+    print(model.score(testFeatures, testLabels))
+    print(predictions)
+    for i in range (0, len(predictions)):
+        if(predictions[i] > .0):
             predictions[i] = 1
+        elif(predictions[i] < -.33):
+            predictions[i] = -1
         else:
             predictions[i] = 0
-            
-    target_names = ['0', '1']
+    target_names = ['-1', '0', '1']
 
     print(classification_report(testLabels, predictions, target_names=target_names))
     confusionMatrix = confusion_matrix(testLabels, predictions)
     print('Confusion Matrix: ', confusionMatrix)
+
+    joblib.dump(model, filename)
 
 
 
